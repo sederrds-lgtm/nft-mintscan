@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT MintScan - CatchMint Style</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0e1a;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #0f1419;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-section {
+            padding: 20px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #8b92b0;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 30px;
+            background: #0f1419;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-title h2 {
+            font-size: 24px;
+            color: #e0e0e0;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #8b92b0;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* Time Filters */
+        .time-filters {
+            padding: 0 5px;
+        }
+
+        .time-filter {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #8b92b0;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .time-filter:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(102, 126, 234, 0.5);
+            color: #a0aec0;
+        }
+
+        .time-filter.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+        }
+
+        /* Collections Grid (Overview) */
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .collection-card {
+            background: #0f1419;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .collection-card:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .collection-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .collection-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .collection-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .collection-info h3 {
+            font-size: 16px;
+            color: #e0e0e0;
+            margin-bottom: 4px;
+        }
+
+        .collection-info p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .collection-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .mini-stat {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .mini-stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .mini-stat-label {
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        .collection-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 6px;
+            color: #667eea;
+            text-decoration: none;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Live Mints List */
+        .mints-list {
+            display: none;
+        }
+
+        .mints-list.active {
+            display: block;
+        }
+
+        .mint-item {
+            background: #0f1419;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s;
+        }
+
+        .mint-item:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .mint-item.new {
+            border-color: #22c55e;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: #22c55e; }
+            50% { border-color: rgba(34, 197, 94, 0.3); }
+        }
+
+        .mint-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .mint-details {
+            flex: 1;
+        }
+
+        .mint-collection {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .mint-collection:hover {
+            text-decoration: underline;
+        }
+
+        .mint-token {
+            font-size: 13px;
+            color: #e0e0e0;
+            margin-bottom: 8px;
+        }
+
+        .mint-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .mint-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mint-time {
+            color: #8b92b0;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .mint-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mint-action {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .mint-action:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-new {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            display: inline-block;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>🎨 MintScan</h1>
+                <p style="font-size: 11px; color: #6b7280; margin-top: 5px;">
+                    <span class="status-dot"></span> <span id="statusText">Ready</span>
+                </p>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Settings</h3>
+                
+                <div class="form-group">
+                    <label>RPC Endpoint</label>
+                    <input type="text" id="rpcUrl" 
+                           value="https://ethereum-rpc.publicnode.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Scan Interval</label>
+                    <select id="scanInterval">
+                        <option value="3">3 seconds</option>
+                        <option value="5" selected>5 seconds</option>
+                        <option value="10">10 seconds</option>
+                        <option value="15">15 seconds</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" id="startBtn">
+                    ▶️ Start Scanning
+                </button>
+                <button class="btn" id="stopBtn" style="background: rgba(255,255,255,0.1); color: white;" disabled>
+                    ⏹️ Stop
+                </button>
+            </div>
+
+            <div class="sidebar-section" style="margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05);">
+                <h3>Statistics</h3>
+                <div style="font-size: 13px; line-height: 1.8;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #6b7280;">Collections:</span>
+                        <span id="totalCollections" style="color: #667eea; font-weight: 600;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: #6b7280;">Total Mints:</span>
+                        <span id="totalMints" style="color: #667eea; font-weight: 600;">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #6b7280;">Block:</span>
+                        <span id="currentBlock" style="color: #667eea; font-weight: 600;">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-top">
+                    <div class="header-title">
+                        <h2>NFT Mint Activity</h2>
+                    </div>
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="recentMints">0</div>
+                            <div class="stat-label">Last Hour</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="uniqueMinters">0</div>
+                            <div class="stat-label">Unique Minters</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="overview">
+                        📊 Overview
+                    </button>
+                    <button class="tab" data-tab="live">
+                        🔴 Live Mints
+                    </button>
+                </div>
+                
+                <!-- Time Filter (Only for Overview) -->
+                <div class="time-filters" id="timeFilters" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                    <button class="time-filter active" data-minutes="all">
+                        All Time
+                    </button>
+                    <button class="time-filter" data-minutes="5">
+                        5 min
+                    </button>
+                    <button class="time-filter" data-minutes="15">
+                        15 min
+                    </button>
+                    <button class="time-filter" data-minutes="30">
+                        30 min
+                    </button>
+                    <button class="time-filter" data-minutes="60">
+                        1 hour
+                    </button>
+                    <button class="time-filter" data-minutes="180">
+                        3 hours
+                    </button>
+                    <button class="time-filter" data-minutes="360">
+                        6 hours
+                    </button>
+                    <button class="time-filter" data-minutes="720">
+                        12 hours
+                    </button>
+                    <button class="time-filter" data-minutes="1440">
+                        24 hours
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Overview Tab (Collections Grid) -->
+                <div id="overviewTab" class="collections-grid">
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <h3>No collections detected yet</h3>
+                        <p>Start scanning to see mint activity</p>
+                    </div>
+                </div>
+
+                <!-- Live Mints Tab -->
+                <div id="liveTab" class="mints-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>No mints detected yet</h3>
+                        <p>Start scanning to see live mints</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script>
+        // Wait for page to load
+        window.addEventListener('load', function() {
+            if (typeof ethers === 'undefined') {
+                console.log('Ethers not loaded, trying alternative...');
+                setTimeout(() => {
+                    if (typeof ethers === 'undefined') {
+                        alert('Web3 library loading... Please refresh the page (F5) and try again.');
+                    }
+                }, 2000);
+            }
+        });
+    </script>
+    <script>
+        let provider = null;
+        let isMonitoring = false;
+        let monitoringInterval = null;
+        let lastBlock = 0;
+        let allMints = [];
+        let collections = {};
+        let collectionCache = {};
+        let currentTab = 'overview';
+        let currentTimeFilter = 'all'; // all, 5, 15, 30, 60, 180, 360, 720, 1440
+
+        const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+        
+        // Blacklist untuk filter non-NFT contracts
+        const CONTRACT_BLACKLIST = [
+            // Uniswap V2/V3
+            /uniswap/i,
+            /uni-v/i,
+            /pancake/i,
+            /sushiswap/i,
+            // LP Tokens
+            /\bLP\b/i,
+            /\bLP-/i,
+            /liquidity/i,
+            /pair/i,
+            /-LP$/i,
+            // Stablecoins & Major ERC20
+            /\bUSDT\b/i,
+            /\bUSDC\b/i,
+            /\bDAI\b/i,
+            /\bWETH\b/i,
+            /\bWBTC\b/i,
+            /\bUSDe\b/i,
+            /\bsDAI\b/i,
+            // DeFi protocols
+            /aave/i,
+            /compound/i,
+            /curve/i,
+            /balancer/i,
+            /1inch/i,
+            /maker/i,
+            /yearn/i,
+            // Wrapped tokens
+            /^w[A-Z]{3,4}$/,  // wETH, wBTC, etc
+            /wrapped/i,
+            // Pool tokens
+            /pool/i,
+            /vault/i,
+            /-pool$/i,
+            // Generic token patterns
+            /token$/i,
+            /coin$/i
+        ];
+
+        // Check if contract is likely an NFT
+        async function isNFTContract(contractAddress, contractName) {
+            // Filter by name first (quick check)
+            if (contractName && contractName !== 'Loading...') {
+                for (const pattern of CONTRACT_BLACKLIST) {
+                    if (pattern.test(contractName)) {
+                        console.log(`🚫 Filtered by name: ${contractName}`);
+                        return false;
+                    }
+                }
+            }
+
+            try {
+                const contract = new ethers.Contract(
+                    contractAddress,
+                    [
+                        'function supportsInterface(bytes4) view returns (bool)',
+                        'function decimals() view returns (uint8)',
+                        'function balanceOf(address) view returns (uint256)',
+                        'function totalSupply() view returns (uint256)'
+                    ],
+                    provider
+                );
+
+                // Priority 1: Check for ERC-721 interface (0x80ac58cd)
+                try {
+                    const isERC721 = await contract.supportsInterface('0x80ac58cd');
+                    if (isERC721) {
+                        console.log(`✅ ERC-721 verified: ${contractName}`);
+                        return true;
+                    }
+                } catch (e) {
+                    // Contract doesn't support supportsInterface, continue checks
+                }
+
+                // Priority 2: Check for ERC-1155 interface (0xd9b67a26)
+                try {
+                    const isERC1155 = await contract.supportsInterface('0xd9b67a26');
+                    if (isERC1155) {
+                        console.log(`✅ ERC-1155 verified: ${contractName}`);
+                        return true;
+                    }
+                } catch (e) {
+                    // Continue
+                }
+
+                // Priority 3: Check if it has decimals (ERC-20 indicator)
+                try {
+                    const decimals = await contract.decimals();
+                    if (decimals !== undefined) {
+                        console.log(`🚫 Has decimals (ERC-20): ${contractName}`);
+                        return false; // Has decimals = ERC-20 token, not NFT
+                    }
+                } catch (e) {
+                    // No decimals is good for NFTs
+                }
+
+                // Priority 4: Check totalSupply range (heuristic)
+                try {
+                    const totalSupply = await contract.totalSupply();
+                    const supply = totalSupply.toString();
+                    const supplyNum = parseInt(supply);
+                    
+                    // Most NFTs have supply < 100,000
+                    // Most tokens have supply in millions/billions
+                    if (supplyNum > 100000) {
+                        console.log(`🚫 Large supply (likely token): ${contractName} - ${formatNumber(supply)}`);
+                        return false;
+                    }
+                } catch (e) {
+                    // Can't check supply
+                }
+
+                // If we get here, likely an NFT (no decimals, reasonable supply)
+                console.log(`✅ Assumed NFT (passed checks): ${contractName}`);
+                return true;
+                
+            } catch (error) {
+                // If we can't verify, be conservative and assume NFT
+                // (to avoid losing real NFT data)
+                console.log(`⚠️ Verification error, assuming NFT: ${contractName}`);
+                return true;
+            }
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentTab = tab.dataset.tab;
+                
+                if (currentTab === 'overview') {
+                    document.getElementById('overviewTab').style.display = 'grid';
+                    document.getElementById('liveTab').style.display = 'none';
+                    document.getElementById('timeFilters').style.display = 'flex';
+                } else {
+                    document.getElementById('overviewTab').style.display = 'none';
+                    document.getElementById('liveTab').style.display = 'block';
+                    document.getElementById('timeFilters').style.display = 'none';
+                }
+            });
+        });
+
+        // Time filter switching
+        document.querySelectorAll('.time-filter').forEach(filter => {
+            filter.addEventListener('click', () => {
+                document.querySelectorAll('.time-filter').forEach(f => f.classList.remove('active'));
+                filter.classList.add('active');
+                currentTimeFilter = filter.dataset.minutes;
+                updateOverview();
+            });
+        });
+
+        // Start button
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const rpcUrl = document.getElementById('rpcUrl').value.trim();
+            const scanInterval = parseInt(document.getElementById('scanInterval').value);
+
+            if (!rpcUrl) {
+                alert('Please enter RPC URL!');
+                return;
+            }
+
+            // Check ethers library
+            if (typeof ethers === 'undefined') {
+                alert('Web3 library is loading... Please wait a moment and try again.\n\nOr refresh the page (F5) and try again.');
+                return;
+            }
+
+            try {
+                document.getElementById('statusText').textContent = 'Connecting...';
+                
+                provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+                
+                // Test connection
+                const network = await provider.getNetwork();
+                lastBlock = await provider.getBlockNumber();
+                
+                document.getElementById('currentBlock').textContent = lastBlock;
+                document.getElementById('statusText').textContent = 'Scanning...';
+
+                isMonitoring = true;
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+
+                startMonitoring(scanInterval);
+            } catch (error) {
+                console.error('Connection error:', error);
+                document.getElementById('statusText').textContent = 'Failed';
+                alert('Failed to connect to RPC:\n' + error.message + '\n\nTry different RPC:\n- https://eth.llamarpc.com\n- https://rpc.ankr.com/eth');
+            }
+        });
+
+        // Stop button
+        document.getElementById('stopBtn').addEventListener('click', () => {
+            isMonitoring = false;
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+            }
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            document.getElementById('statusText').textContent = 'Stopped';
+        });
+
+        async function startMonitoring(scanInterval) {
+            monitoringInterval = setInterval(async () => {
+                if (!isMonitoring) return;
+
+                try {
+                    const currentBlock = await provider.getBlockNumber();
+                    document.getElementById('currentBlock').textContent = currentBlock;
+
+                    if (currentBlock > lastBlock) {
+                        await scanBlocks(lastBlock + 1, currentBlock);
+                        lastBlock = currentBlock;
+                    }
+                } catch (error) {
+                    console.error('Monitoring error:', error);
+                }
+            }, scanInterval * 1000);
+
+            // Update stats every second
+            setInterval(() => {
+                if (isMonitoring) {
+                    updateStats();
+                }
+            }, 1000);
+        }
+
+        async function scanBlocks(fromBlock, toBlock) {
+            try {
+                const filter = {
+                    fromBlock,
+                    toBlock,
+                    topics: [
+                        ethers.utils.id('Transfer(address,address,uint256)'),
+                        ethers.utils.hexZeroPad(ZERO_ADDRESS, 32)
+                    ]
+                };
+
+                const logs = await provider.getLogs(filter);
+
+                for (const log of logs) {
+                    await processLog(log);
+                }
+            } catch (error) {
+                console.error('Scan error:', error);
+            }
+        }
+
+        async function processLog(log) {
+            try {
+                const iface = new ethers.utils.Interface([
+                    'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
+                ]);
+
+                const decoded = iface.parseLog(log);
+                const block = await provider.getBlock(log.blockNumber);
+
+                const mintData = {
+                    contractAddress: log.address,
+                    tokenId: decoded.args.tokenId.toString(),
+                    minter: decoded.args.to,
+                    transactionHash: log.transactionHash,
+                    blockNumber: log.blockNumber,
+                    timestamp: Date.now(),
+                    blockTimestamp: block.timestamp,
+                    collectionName: 'Loading...'
+                };
+
+                // Check if already verified as NFT or non-NFT
+                if (collectionCache[log.address]) {
+                    // Already processed, add directly
+                    if (collections[log.address]) { // Verified as NFT
+                        collections[log.address].mints.push(mintData);
+                        collections[log.address].uniqueMinters.add(decoded.args.to);
+                        allMints.unshift(mintData);
+                        mintData.collectionName = collectionCache[log.address];
+                        addToLiveMints(mintData);
+                        updateOverview();
+                    }
+                    // If not in collections, it was filtered out as non-NFT
+                    return;
+                }
+
+                // New collection - verify first
+                const contract = new ethers.Contract(
+                    log.address,
+                    ['function name() view returns (string)'],
+                    provider
+                );
+                
+                let contractName = 'Loading...';
+                try {
+                    contractName = await contract.name();
+                } catch (e) {
+                    contractName = shortenAddress(log.address);
+                }
+
+                // Check if it's an NFT
+                const isNFT = await isNFTContract(log.address, contractName);
+                
+                if (!isNFT) {
+                    // Not an NFT, mark as filtered and skip
+                    collectionCache[log.address] = null; // Mark as filtered
+                    console.log(`❌ Filtered non-NFT: ${contractName}`);
+                    return;
+                }
+
+                // It's an NFT! Process it
+                console.log(`✅ Verified NFT: ${contractName}`);
+                collectionCache[log.address] = contractName;
+                
+                // Create collection
+                if (!collections[log.address]) {
+                    collections[log.address] = {
+                        address: log.address,
+                        name: contractName,
+                        mints: [],
+                        uniqueMinters: new Set(),
+                        firstMint: Date.now(),
+                        totalSupply: '...',
+                        maxSupply: '...',
+                        isNFT: true
+                    };
+                }
+                
+                collections[log.address].mints.push(mintData);
+                collections[log.address].uniqueMinters.add(decoded.args.to);
+                allMints.unshift(mintData);
+                mintData.collectionName = contractName;
+                
+                // Now safe to add to UI
+                addToLiveMints(mintData);
+                updateOverview();
+                
+                // Fetch supply info in background
+                fetchSupplyInfo(log.address);
+                
+            } catch (error) {
+                console.error('Process log error:', error);
+            }
+        }
+
+        async function fetchSupplyInfo(contractAddress) {
+            // Fetch supply info in background (non-blocking)
+            try {
+                const contract = new ethers.Contract(
+                    contractAddress,
+                    [
+                        'function totalSupply() view returns (uint256)',
+                        'function maxSupply() view returns (uint256)'
+                    ],
+                    provider
+                );
+                
+                try {
+                    const totalSupply = await contract.totalSupply();
+                    if (collections[contractAddress]) {
+                        collections[contractAddress].totalSupply = totalSupply.toString();
+                        updateOverview();
+                    }
+                } catch (e) {
+                    // No totalSupply method
+                }
+                
+                try {
+                    const maxSupply = await contract.maxSupply();
+                    if (collections[contractAddress]) {
+                        collections[contractAddress].maxSupply = maxSupply.toString();
+                        updateOverview();
+                    }
+                } catch (e) {
+                    // No maxSupply method
+                }
+                
+            } catch (error) {
+                console.error('Fetch supply error:', error);
+            }
+        }
+
+        function addToLiveMints(mint) {
+            const liveTab = document.getElementById('liveTab');
+            const emptyState = liveTab.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const mintItem = document.createElement('div');
+            mintItem.className = 'mint-item new';
+            mintItem.dataset.contract = mint.contractAddress;
+            mintItem.dataset.timestamp = mint.timestamp;
+
+            mintItem.innerHTML = `
+                <div class="mint-icon">🎨</div>
+                <div class="mint-details">
+                    <div class="mint-collection">${mint.collectionName}</div>
+                    <div class="mint-token">Token #${mint.tokenId}</div>
+                    <div class="mint-meta">
+                        <span>👤 ${shortenAddress(mint.minter)}</span>
+                        <span>📦 Block ${mint.blockNumber}</span>
+                    </div>
+                </div>
+                <div class="mint-time">${getTimeAgo(mint.timestamp)}</div>
+                <div class="mint-actions">
+                    <a href="https://etherscan.io/tx/${mint.transactionHash}" 
+                       target="_blank" class="mint-action" title="Etherscan">🔍</a>
+                    <a href="https://opensea.io/assets/ethereum/${mint.contractAddress}/${mint.tokenId}" 
+                       target="_blank" class="mint-action" title="OpenSea">🌊</a>
+                </div>
+            `;
+
+            liveTab.insertBefore(mintItem, liveTab.firstChild);
+
+            // Remove 'new' class after 3 seconds
+            setTimeout(() => {
+                mintItem.classList.remove('new');
+            }, 3000);
+        }
+
+        function updateOverview() {
+            const overviewTab = document.getElementById('overviewTab');
+            const emptyState = overviewTab.querySelector('.empty-state');
+            
+            // Clean up collections older than 24 hours
+            const now = Date.now();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            
+            Object.keys(collections).forEach(address => {
+                const collection = collections[address];
+                const lastMintTime = collection.mints[collection.mints.length - 1]?.timestamp || 0;
+                
+                if (now - lastMintTime > twentyFourHours) {
+                    console.log(`🗑️ Removing inactive collection (>24h): ${collection.name}`);
+                    delete collections[address];
+                    // Also remove from allMints
+                    allMints = allMints.filter(m => m.contractAddress !== address);
+                }
+            });
+            
+            if (Object.keys(collections).length > 0 && emptyState) {
+                emptyState.remove();
+            }
+
+            // Clear and rebuild
+            overviewTab.innerHTML = '';
+
+            // Filter collections based on time filter
+            let filteredCollections = Object.values(collections);
+            
+            if (currentTimeFilter !== 'all') {
+                const filterMinutes = parseInt(currentTimeFilter);
+                const filterTime = now - (filterMinutes * 60 * 1000);
+                
+                filteredCollections = filteredCollections.filter(collection => {
+                    const lastMint = collection.mints[collection.mints.length - 1];
+                    return lastMint && lastMint.timestamp > filterTime;
+                });
+            }
+
+            // Show empty state if no collections after filter
+            if (filteredCollections.length === 0) {
+                overviewTab.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <h3>No collections in this time range</h3>
+                        <p>${currentTimeFilter === 'all' ? 'Start scanning to see mint activity' : 'Try a longer time range'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by most recent activity
+            const sortedCollections = filteredCollections.sort((a, b) => 
+                b.mints[b.mints.length - 1]?.timestamp - a.mints[a.mints.length - 1]?.timestamp
+            );
+
+            sortedCollections.forEach(collection => {
+                const card = document.createElement('div');
+                card.className = 'collection-card';
+                
+                // Calculate mints in selected time range
+                let mintsInRange = collection.mints.length;
+                if (currentTimeFilter !== 'all') {
+                    const filterMinutes = parseInt(currentTimeFilter);
+                    const filterTime = now - (filterMinutes * 60 * 1000);
+                    mintsInRange = collection.mints.filter(m => m.timestamp > filterTime).length;
+                }
+                
+                const recentMints = collection.mints.filter(m => 
+                    now - m.timestamp < 3600000
+                ).length;
+
+                // Calculate time since last mint
+                const lastMintTime = collection.mints[collection.mints.length - 1]?.timestamp || 0;
+                const timeSinceLastMint = getTimeAgo(lastMintTime);
+
+                // Format supply numbers
+                const totalSupply = collection.totalSupply !== '...' ? 
+                    formatNumber(collection.totalSupply) : '...';
+                const maxSupply = collection.maxSupply !== '...' ? 
+                    formatNumber(collection.maxSupply) : '...';
+                const supplyPercent = collection.totalSupply !== '...' && collection.maxSupply !== '...' ?
+                    ((parseInt(collection.totalSupply) / parseInt(collection.maxSupply)) * 100).toFixed(1) + '%' : '';
+
+                card.innerHTML = `
+                    <div class="collection-header">
+                        <div class="collection-icon">🎨</div>
+                        <div class="collection-info">
+                            <h3>${collection.name}</h3>
+                            <p>${shortenAddress(collection.address)}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="collection-stats">
+                        <div class="mini-stat">
+                            <div class="mini-stat-value">${totalSupply}</div>
+                            <div class="mini-stat-label">Minted</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="mini-stat-value">${maxSupply}</div>
+                            <div class="mini-stat-label">Max Supply</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="mini-stat-value">${supplyPercent || recentMints}</div>
+                            <div class="mini-stat-label">${supplyPercent ? 'Minted' : '1h'}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+                            <span style="color: #6b7280;">In time range:</span>
+                            <span style="color: #667eea; font-weight: 600;">${mintsInRange} mints</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+                            <span style="color: #6b7280;">Unique minters:</span>
+                            <span style="color: #667eea; font-weight: 600;">${collection.uniqueMinters.size}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                            <span style="color: #6b7280;">Last mint:</span>
+                            <span style="color: #22c55e; font-weight: 600;">${timeSinceLastMint}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="collection-actions">
+                        <a href="https://etherscan.io/address/${collection.address}" 
+                           target="_blank" class="action-btn">
+                            🔍 Contract
+                        </a>
+                        <a href="https://opensea.io/assets/ethereum/${collection.address}" 
+                           target="_blank" class="action-btn">
+                            🌊 OpenSea
+                        </a>
+                    </div>
+                `;
+
+                overviewTab.appendChild(card);
+            });
+        }
+
+        function formatNumber(numStr) {
+            const num = parseInt(numStr);
+            if (isNaN(num)) return numStr;
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        function updateStats() {
+            document.getElementById('totalCollections').textContent = Object.keys(collections).length;
+            document.getElementById('totalMints').textContent = allMints.length;
+            
+            // Recent mints (last hour)
+            const oneHourAgo = Date.now() - 3600000;
+            const recentMints = allMints.filter(m => m.timestamp > oneHourAgo).length;
+            document.getElementById('recentMints').textContent = recentMints;
+            
+            // Unique minters
+            const uniqueMinters = new Set(allMints.map(m => m.minter));
+            document.getElementById('uniqueMinters').textContent = uniqueMinters.size;
+
+            // Update time ago in live mints
+            document.querySelectorAll('.mint-time').forEach(el => {
+                const mintItem = el.closest('.mint-item');
+                const timestamp = parseInt(mintItem.dataset.timestamp);
+                el.textContent = getTimeAgo(timestamp);
+            });
+        }
+
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            if (seconds < 5) return 'Just now';
+            if (seconds < 60) return `${seconds}s ago`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+            return `${Math.floor(seconds / 86400)}d ago`;
+        }
+
+        function shortenAddress(address) {
+            if (!address || address.length <= 13) return address;
+            return `${address.slice(0, 6)}...${address.slice(-4)}`;
+        }
+    </script>
+</body>
+</html>
